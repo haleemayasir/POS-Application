@@ -49,7 +49,9 @@ products = {
     ]
 }
 cart = []
-current_category = "Sweets"
+TAX_RATE = 0.08      # 8% tax
+DISC_RATE = 0.10     # 10% discount
+current_category = "Spicy"
 
 # --- Functions ---
 
@@ -83,20 +85,49 @@ def add_to_cart(product):
 
 def update_cart():
     cart_list.delete(0, tk.END)
-    total = 0
+    subtotal = 0
     for item in cart:
-        cart_list.insert(tk.END, f"{item['name']} - ${item['price']:.2f}")
-        total += item['price']
-    total_label.config(text=f"Total: ${total:.2f}")
+        cart_list.insert(tk.END, f"{item['name']} — ${item['price']:.2f}")
+        subtotal += item['price']
+
+    discount = subtotal * DISC_RATE if discount_var.get() else 0  # NEW
+    taxed    = (subtotal - discount) * TAX_RATE                  # NEW
+    total    = subtotal - discount + taxed                       # NEW
+
+    total_label.config(text=(f"Subtotal: ${subtotal:.2f}\n"
+                             f"Discount: -${discount:.2f}\n"
+                             f"Tax (8%): +${taxed:.2f}\n"
+                             f"Total: ${total:.2f}"))
 
 def charge():
     if not cart:
         messagebox.showwarning("Cart Empty", "Please add items to cart.")
         return
-    total = sum(item['price'] for item in cart)
-    messagebox.showinfo("Order Placed", f"Total charged: ${total:.2f}")
+
+    subtotal = sum(i['price'] for i in cart)
+    discount = subtotal * DISC_RATE if discount_var.get() else 0
+    taxed    = (subtotal - discount) * TAX_RATE
+    total    = subtotal - discount + taxed
+
+    # Create fancy receipt text
+    slip = "       ✦ RECEIPT ✦\n"
+    slip += "-" * 26 + "\n"
+    for item in cart:
+        slip += f"{item['name']:<18}${item['price']:>5.2f}\n"
+    slip += "-" * 26 + "\n"
+    slip += f"{'Subtotal':<18}${subtotal:>5.2f}\n"
+    if discount:
+        slip += f"{'Discount':<18}-${discount:>5.2f}\n"
+    slip += f"{'Tax (8%)':<18}+${taxed:>5.2f}\n"
+    slip += f"{'TOTAL':<18}${total:>5.2f}\n"
+    slip += "-" * 26 + "\nThank you for shopping!\n"
+
+    messagebox.showinfo("Order Placed", slip)
+
     cart.clear()
+    discount_var.set(False)  # uncheck discount for next customer
     update_cart()
+
 
 # --- GUI ---
 
@@ -118,7 +149,8 @@ product_frame.pack(pady=10)
 
 # Cart and Checkout
 cart_frame = tk.Frame(root)
-cart_frame.pack(side="right", fill="y", padx=20)
+cart_frame.place(x=700, y=20)  # NEW: Positions cart at the top-right corner
+
 
 tk.Label(cart_frame, text="Cart", font=("Arial", 14, "bold")).pack()
 
@@ -127,8 +159,14 @@ cart_list.pack()
 
 total_label = tk.Label(cart_frame, text="Total: $0.00", font=("Arial", 12))
 total_label.pack(pady=5)
+discount_var = tk.BooleanVar()  # NEW
+tk.Checkbutton(cart_frame, text="Apply 10% discount",
+               variable=discount_var, command=update_cart).pack()  # NEW
 
 tk.Button(cart_frame, text="Charge", bg="green", fg="white", width=20, command=charge).pack(pady=10)
+tk.Button(cart_frame, text="Remove Selected", bg="red", fg="white",  # NEW
+          width=20, command=lambda: remove_selected()).pack(pady=5)
+cart_list.bind("<Double-Button-1>", lambda e: remove_selected())  # NEW
 
 # Show default category
 display_products()
