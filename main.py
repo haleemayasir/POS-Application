@@ -128,6 +128,12 @@ def charge():
     discount_var.set(False)  # uncheck discount for next customer
     update_cart()
 
+def remove_selected():
+    selected = cart_list.curselection()
+    if selected:
+        index = selected[0]
+        del cart[index]
+        update_cart()
 
 # --- GUI ---
 
