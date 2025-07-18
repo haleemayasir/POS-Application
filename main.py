@@ -3,6 +3,33 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import os
 
+# --- LOGIN SCREEN ---
+def show_login():
+    def attempt_login():
+        username = user_entry.get()
+        password = pass_entry.get()
+        if username == "admin" and password == "1234":
+            login_window.destroy()
+            start_pos_app()
+        else:
+            messagebox.showerror("Login Failed", "Incorrect username or password.")
+
+    login_window = tk.Tk()
+    login_window.title("Login")
+    login_window.geometry("300x200")
+
+    tk.Label(login_window, text="Username").pack(pady=5)
+    user_entry = tk.Entry(login_window)
+    user_entry.pack()
+
+    tk.Label(login_window, text="Password").pack(pady=5)
+    pass_entry = tk.Entry(login_window, show="*")
+    pass_entry.pack()
+
+    tk.Button(login_window, text="Login", command=attempt_login).pack(pady=20)
+
+    login_window.mainloop()
+
 # Define product data with categories
 products = {
     "Sweets": [
@@ -136,45 +163,48 @@ def remove_selected():
         update_cart()
 
 # --- GUI ---
+def start_pos_app():
+    global root, product_frame, cart_list, total_label, discount_var, current_category
 
-root = tk.Tk()
-root.title("POS App with Categories")
-root.geometry("900x600")
+    root = tk.Tk()
+    root.title("POS App with Categories")
+    root.geometry("900x600")
 
-# Category Buttons
-category_frame = tk.Frame(root)
-category_frame.pack(pady=10)
+    # Category Buttons
+    category_frame = tk.Frame(root)
+    category_frame.pack(pady=10)
 
-for cat in products:
-    btn = tk.Button(category_frame, text=cat, command=lambda c=cat: switch_category(c))
-    btn.pack(side="left", padx=10)
+    for cat in products:
+        btn = tk.Button(category_frame, text=cat, command=lambda c=cat: switch_category(c))
+        btn.pack(side="left", padx=10)
 
-# Product Display Frame
-product_frame = tk.Frame(root)
-product_frame.pack(pady=10)
+    # Product Display Frame
+    product_frame = tk.Frame(root)
+    product_frame.pack(pady=10)
 
-# Cart and Checkout
-cart_frame = tk.Frame(root)
-cart_frame.place(x=700, y=20)  # NEW: Positions cart at the top-right corner
+    # Cart and Checkout
+    cart_frame = tk.Frame(root)
+    cart_frame.place(x=700, y=20)  # NEW: Positions cart at the top-right corner
 
 
-tk.Label(cart_frame, text="Cart", font=("Arial", 14, "bold")).pack()
+    tk.Label(cart_frame, text="Cart", font=("Arial", 14, "bold")).pack()
 
-cart_list = tk.Listbox(cart_frame, width=30, height=20)
-cart_list.pack()
+    cart_list = tk.Listbox(cart_frame, width=30, height=20)
+    cart_list.pack()
 
-total_label = tk.Label(cart_frame, text="Total: $0.00", font=("Arial", 12))
-total_label.pack(pady=5)
-discount_var = tk.BooleanVar()  # NEW
-tk.Checkbutton(cart_frame, text="Apply 10% discount",
-               variable=discount_var, command=update_cart).pack()  # NEW
+    total_label = tk.Label(cart_frame, text="Total: $0.00", font=("Arial", 12))
+    total_label.pack(pady=5)
+    discount_var = tk.BooleanVar()  # NEW
+    tk.Checkbutton(cart_frame, text="Apply 10% discount",
+                variable=discount_var, command=update_cart).pack()  # NEW
 
-tk.Button(cart_frame, text="Charge", bg="green", fg="white", width=20, command=charge).pack(pady=10)
-tk.Button(cart_frame, text="Remove Selected", bg="red", fg="white",  # NEW
+    tk.Button(cart_frame, text="Charge", bg="green", fg="white", width=20, command=charge).pack(pady=10)
+    tk.Button(cart_frame, text="Remove Selected", bg="red", fg="white",  # NEW
           width=20, command=lambda: remove_selected()).pack(pady=5)
-cart_list.bind("<Double-Button-1>", lambda e: remove_selected())  # NEW
+    cart_list.bind("<Double-Button-1>", lambda e: remove_selected())  # NEW
 
-# Show default category
-display_products()
+    # Show default category
+    display_products()
 
-root.mainloop()
+show_login()
+
