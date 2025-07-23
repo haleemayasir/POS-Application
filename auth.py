@@ -1,0 +1,116 @@
+import tkinter as tk
+from tkinter import messagebox
+from db import db_connect
+from app_startup import start_pos_app
+
+db = db_connect()
+cursor = db.cursor()
+
+def show_register(parent_window):
+    for widget in parent_window.winfo_children():
+        widget.destroy()
+
+    parent_window.title("Register")
+    parent_window.geometry("400x300")
+    parent_window.configure(bg="#f0f0f0")
+
+    def register_user():
+        username = user_entry.get()
+        password = pass_entry.get()
+        role = role_var.get()
+
+        if not username or not password or not role:
+            messagebox.showerror("Error", "All fields are required.")
+            return
+
+        if role not in ['admin', 'customer']:
+            messagebox.showerror("Error", "Please select a valid role.")
+            return
+
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        result = cursor.fetchone()
+        if result:
+            messagebox.showerror("Error", "Username already exists.")
+        else:
+            cursor.execute("INSERT INTO users (username, password, role) VALUES (%s, %s, %s)",
+                       (username, password, role))
+            db.commit()
+            messagebox.showinfo("Success", "Registered successfully! Please login.")
+            show_login(parent_window)
+
+    tk.Label(parent_window, text="Create New Account", font=("Arial", 14, "bold"), bg="#f0f0f0", fg="#333").pack(pady=20)
+
+    user_frame = tk.Frame(parent_window, bg="#f0f0f0")
+    user_frame.pack(pady=5)
+    tk.Label(user_frame, text="Username:", font=("Arial", 10), bg="#f0f0f0").pack(side="left")
+    user_entry = tk.Entry(user_frame, width=30)
+    user_entry.pack(side="left", padx=10)
+
+    pass_frame = tk.Frame(parent_window, bg="#f0f0f0")
+    pass_frame.pack(pady=5)
+    tk.Label(pass_frame, text="Password:", font=("Arial", 10), bg="#f0f0f0").pack(side="left")
+    pass_entry = tk.Entry(pass_frame, width=30, show="*")
+    pass_entry.pack(side="left", padx=10)
+
+    # --- Role Selection ---
+    role_var = tk.StringVar()
+    
+    role_frame = tk.Frame(parent_window, bg="#f0f0f0")
+    role_frame.pack(pady=5)
+
+    tk.Label(role_frame, text="Role:", font=("Arial", 10), bg="#f0f0f0").pack(side="left")
+
+    role_menu = tk.OptionMenu(role_frame, role_var, "admin", "customer")
+    role_menu.config(width=25)
+    role_menu.pack(side="left", padx=10)
+
+    btn_frame = tk.Frame(parent_window, bg="#f0f0f0")
+    btn_frame.pack(pady=20)
+
+    tk.Button(btn_frame, text="Register", command=register_user, width=12, bg="blue", fg="white", font=("Arial", 10, "bold")).pack(side="left", padx=10)
+    tk.Button(btn_frame, text="Back to Login", command=lambda: show_login(parent_window), width=12, bg="gray", fg="white", font=("Arial", 10)).pack(side="left", padx=10)
+
+def show_login(existing_window=None):
+    if existing_window:
+        login_window = existing_window
+        for widget in login_window.winfo_children():
+            widget.destroy()
+    else:
+        login_window = tk.Tk()
+
+    login_window.title("Login")
+    login_window.geometry("400x300")
+    login_window.configure(bg="#f0f0f0")
+
+    def attempt_login():
+        username = user_entry.get()
+        password = pass_entry.get()
+        cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
+        result = cursor.fetchone()
+        if result:
+            login_window.destroy()
+            start_pos_app()
+        else:
+            messagebox.showerror("Login Failed", "Incorrect username or password.")
+
+    tk.Label(login_window, text="Login to Your Account", font=("Arial", 14, "bold"), bg="#f0f0f0", fg="#333").pack(pady=20)
+
+    user_frame = tk.Frame(login_window, bg="#f0f0f0")
+    user_frame.pack(pady=5)
+    tk.Label(user_frame, text="Username:", font=("Arial", 10), bg="#f0f0f0").pack(side="left")
+    user_entry = tk.Entry(user_frame, width=30)
+    user_entry.pack(side="left", padx=10)
+
+    pass_frame = tk.Frame(login_window, bg="#f0f0f0")
+    pass_frame.pack(pady=5)
+    tk.Label(pass_frame, text="Password:", font=("Arial", 10), bg="#f0f0f0").pack(side="left")
+    pass_entry = tk.Entry(pass_frame, width=30, show="*")
+    pass_entry.pack(side="left", padx=10)
+
+    btn_frame = tk.Frame(login_window, bg="#f0f0f0")
+    btn_frame.pack(pady=20)
+
+    tk.Button(btn_frame, text="Login", command=attempt_login, width=12, bg="green", fg="white", font=("Arial", 10, "bold")).pack(side="left", padx=10)
+    tk.Button(btn_frame, text="Register", command=lambda: show_register(login_window), width=12, bg="blue", fg="white", font=("Arial", 10, "bold")).pack(side="left", padx=10)
+
+    login_window.mainloop()
