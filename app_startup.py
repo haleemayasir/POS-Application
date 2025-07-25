@@ -5,8 +5,9 @@ from inventory import get_products
 
 products = get_products()
 
-def start_pos_app():
-    root = tk.Tk()
+def start_pos_app(root):
+    for widget in root.winfo_children():
+        widget.destroy()
     root.title("POS App")
     root.geometry("1000x600")
     root.configure(bg="#FFFFFF")  # App background
@@ -25,8 +26,8 @@ def start_pos_app():
 
     # --- Product Display Frame ---
     product_frame = tk.Frame(root, width=800, bg="#FFFFFF")
-    product_frame.pack(side="left", fill="y")
-
+    product_frame.pack(side="left", fill="both", expand=True)
+    
     # Trigger search on typing
     search_entry.bind("<KeyRelease>", lambda e: display_products(product_frame, search_var))
 

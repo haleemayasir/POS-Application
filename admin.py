@@ -103,19 +103,20 @@ def delete_product(tree, cursor, db):
     db.commit()
     refresh_tree(tree, cursor)
 
-def open_admin_panel():
+def open_admin_panel(root):
     db = db_connect()
     cursor = db.cursor()
 
-    admin_win = tk.Tk()
-    admin_win.title("Admin Panel - Inventory")
-    admin_win.geometry("900x500")
-    admin_win.configure(bg="#f9f9f9")
+    for widget in root.winfo_children():
+        widget.destroy()
+    root.title("Admin Panel - Inventory")
+    root.geometry("900x500")
+    root.configure(bg="#f9f9f9")
 
-    tk.Label(admin_win, text="Inventory Management", font=("Arial", 16, "bold"), bg="#f9f9f9", fg="#333").pack(pady=10)
+    tk.Label(root, text="Inventory Management", font=("Arial", 16, "bold"), bg="#f9f9f9", fg="#333").pack(pady=10)
     
     # --- Search Section ---
-    search_frame = tk.Frame(admin_win, bg="#f9f9f9")
+    search_frame = tk.Frame(root, bg="#f9f9f9")
     search_frame.pack(pady=5)
 
     tk.Label(search_frame, text="Search by Name:", bg="#f9f9f9").pack(side="left", padx=5)
@@ -142,7 +143,7 @@ def open_admin_panel():
 
     # Treeview for inventory table
     columns = ("id", "name", "category", "price", "stock")
-    tree = ttk.Treeview(admin_win, columns=columns, show="headings", height=15)
+    tree = ttk.Treeview(root, columns=columns, show="headings", height=15)
     tree.pack(padx=20, pady=10, fill="both", expand=True)
 
     for col in columns:
@@ -157,7 +158,7 @@ def open_admin_panel():
         tree.insert("", "end", values=row)
     
         # --- Buttons ---
-    btn_frame = tk.Frame(admin_win, bg="#f9f9f9")
+    btn_frame = tk.Frame(root, bg="#f9f9f9")
     btn_frame.pack(pady=10)
 
     tk.Button(btn_frame, text="Add Product", bg="blue", fg="white",
@@ -169,4 +170,4 @@ def open_admin_panel():
     tk.Button(btn_frame, text="Delete Product", bg="red", fg="white",
               command=lambda: delete_product(tree, cursor, db)).pack(side="left", padx=10)
 
-    admin_win.mainloop()
+    root.mainloop()

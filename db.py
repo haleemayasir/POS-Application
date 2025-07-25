@@ -8,5 +8,3 @@ def db_connect():
         database="pos_app"
     )
     return db
-def display():
-    print("Conection Successful")

@@ -41,7 +41,7 @@ def display_products(product_frame, search_var):
             normal_img, faded_img = load_image(product["image"])
             if normal_img:
                 item_frame = Frame(product_frame, bg="white")
-                item_frame.grid(row=row, column=col, padx=10, pady=10)
+                item_frame.grid(row=row, column=col, padx=20, pady=5)
 
                 # Image as button
                 btn = Button(item_frame, image=normal_img, command=lambda p=product: add_to_cart(p),

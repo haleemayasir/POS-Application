@@ -88,17 +88,21 @@ def show_login(existing_window=None):
         password = pass_entry.get()
         cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
         result = cursor.fetchone()
-    
+
         if result:
-            role = result[2]  
-            login_window.destroy()
+            role = result[2]
+
+            # 🧽 Clear current window instead of destroying it
+            for widget in login_window.winfo_children():
+                widget.destroy()
 
             if role == "admin":
-                open_admin_panel()
+                open_admin_panel(login_window)  # You'll also need to pass this window to your admin panel
             else:
-                start_pos_app()
+                start_pos_app(login_window)     # ✅ FIX: pass the existing login_window here
         else:
             messagebox.showerror("Login Failed", "Incorrect username or password.")
+
 
 
     tk.Label(login_window, text="Login to Your Account", font=("Arial", 14, "bold"), bg="#f0f0f0", fg="#333").pack(pady=20)
