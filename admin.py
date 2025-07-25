@@ -171,6 +171,10 @@ def open_admin_panel(root):
 
         tk.Button(btn_frame, text="View Customers", bg="purple", fg="white",
                   command=show_customers).pack(side="left", padx=10)
+        
+        tk.Button(btn_frame, text="View Sales History", bg="teal", fg="white",
+          command=show_sales).pack(side="left", padx=10)
+
 
     def show_customers():
         for widget in root.winfo_children():
@@ -196,6 +200,30 @@ def open_admin_panel(root):
 
         tk.Button(root, text="Back to Inventory", command=show_inventory,
                   bg="gray", fg="white").pack(pady=10)
+        
+    def show_sales():
+        for widget in root.winfo_children():
+            widget.destroy()
+
+        root.title("Sales History")
+        root.geometry("900x500")
+        root.configure(bg="#f9f9f9")
+
+        tk.Label(root, text="Sales History", font=("Arial", 16, "bold"), bg="#f9f9f9").pack(pady=10)
+
+        columns = ("Username", "Items", "Total", "Date/Time")
+        tree = ttk.Treeview(root, columns=columns, show="headings", height=15)
+        tree.pack(padx=20, pady=10, fill="both", expand=True)
+
+        for col in columns:
+            tree.heading(col, text=col)
+            tree.column(col, anchor="center", width=200)
+
+        cursor.execute("SELECT username, items, total, date_time FROM sales ORDER BY date_time DESC")
+        for row in cursor.fetchall():
+            tree.insert("", "end", values=row)
+
+        tk.Button(root, text="Back to Inventory", command=show_inventory,bg="gray", fg="white").pack(pady=10)
 
     # Initial view
     show_inventory()

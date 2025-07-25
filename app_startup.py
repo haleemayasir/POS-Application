@@ -5,7 +5,10 @@ from inventory import get_products
 
 products = get_products()
 
-def start_pos_app(root):
+def start_pos_app(root, username):
+    import cart
+    cart.logged_in_user = username  # pass username to cart
+
     for widget in root.winfo_children():
         widget.destroy()
     root.title("POS App")

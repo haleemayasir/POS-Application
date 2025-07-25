@@ -116,7 +116,7 @@ def show_login(existing_window=None):
             if role == "admin":
                 open_admin_panel(login_window)  # You'll also need to pass this window to your admin panel
             else:
-                start_pos_app(login_window)     # ✅ FIX: pass the existing login_window here
+               start_pos_app(login_window, result[6])
         else:
             messagebox.showerror("Login Failed", "Incorrect username or password.")
 
