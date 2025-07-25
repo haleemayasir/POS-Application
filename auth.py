@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from db import db_connect
+from admin import open_admin_panel
 from app_startup import start_pos_app
 
 db = db_connect()
@@ -87,11 +88,18 @@ def show_login(existing_window=None):
         password = pass_entry.get()
         cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
         result = cursor.fetchone()
+    
         if result:
+            role = result[2]  
             login_window.destroy()
-            start_pos_app()
+
+            if role == "admin":
+                open_admin_panel()
+            else:
+                start_pos_app()
         else:
             messagebox.showerror("Login Failed", "Incorrect username or password.")
+
 
     tk.Label(login_window, text="Login to Your Account", font=("Arial", 14, "bold"), bg="#f0f0f0", fg="#333").pack(pady=20)
 
