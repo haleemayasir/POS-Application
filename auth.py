@@ -107,7 +107,7 @@ def show_login(existing_window=None):
         result = cursor.fetchone()
 
         if result:
-            role = result[2]
+            role = result[8]
 
             # 🧽 Clear current window instead of destroying it
             for widget in login_window.winfo_children():

@@ -107,67 +107,96 @@ def open_admin_panel(root):
     db = db_connect()
     cursor = db.cursor()
 
-    for widget in root.winfo_children():
-        widget.destroy()
-    root.title("Admin Panel - Inventory")
-    root.geometry("900x500")
-    root.configure(bg="#f9f9f9")
+    def show_inventory():
+        for widget in root.winfo_children():
+            widget.destroy()
 
-    tk.Label(root, text="Inventory Management", font=("Arial", 16, "bold"), bg="#f9f9f9", fg="#333").pack(pady=10)
-    
-    # --- Search Section ---
-    search_frame = tk.Frame(root, bg="#f9f9f9")
-    search_frame.pack(pady=5)
+        root.title("Admin Panel - Inventory")
+        root.geometry("900x500")
+        root.configure(bg="#f9f9f9")
 
-    tk.Label(search_frame, text="Search by Name:", bg="#f9f9f9").pack(side="left", padx=5)
+        tk.Label(root, text="Inventory Management", font=("Arial", 16, "bold"),
+                 bg="#f9f9f9", fg="#333").pack(pady=10)
 
-    search_var = tk.StringVar()
-    search_entry = tk.Entry(search_frame, textvariable=search_var, width=30)
-    search_entry.pack(side="left", padx=5)
+        # --- Search Section ---
+        search_frame = tk.Frame(root, bg="#f9f9f9")
+        search_frame.pack(pady=5)
 
-    def search_inventory():
-        query = search_var.get().lower()
-        cursor.execute("SELECT id, name, category, price, stock FROM inventory")
-        results = cursor.fetchall()
+        tk.Label(search_frame, text="Search by Name:", bg="#f9f9f9").pack(side="left", padx=5)
 
-        tree.delete(*tree.get_children())  # Clear existing
+        search_var = tk.StringVar()
+        search_entry = tk.Entry(search_frame, textvariable=search_var, width=30)
+        search_entry.pack(side="left", padx=5)
 
-        for row in results:
-            if query in row[1].lower():  # row[1] is name
-                tree.insert("", "end", values=row)
+        def search_inventory():
+            query = search_var.get().lower()
+            cursor.execute("SELECT id, name, category, price, stock FROM inventory")
+            results = cursor.fetchall()
 
-    tk.Button(search_frame, text="Search", command=search_inventory, bg="gray", fg="white").pack(side="left", padx=5)
+            tree.delete(*tree.get_children())
 
-    tk.Button(search_frame,text="Reset",command=lambda: (search_var.set(""), refresh_tree(tree, cursor)),bg="lightgray").pack(side="left", padx=5)
+            for row in results:
+                if query in row[1].lower():
+                    tree.insert("", "end", values=row)
 
+        tk.Button(search_frame, text="Search", command=search_inventory,
+                  bg="gray", fg="white").pack(side="left", padx=5)
+        tk.Button(search_frame, text="Reset",
+                  command=lambda: (search_var.set(""), refresh_tree(tree, cursor)),
+                  bg="lightgray").pack(side="left", padx=5)
 
-    # Treeview for inventory table
-    columns = ("id", "name", "category", "price", "stock")
-    tree = ttk.Treeview(root, columns=columns, show="headings", height=15)
-    tree.pack(padx=20, pady=10, fill="both", expand=True)
+        # --- Inventory Table ---
+        columns = ("id", "name", "category", "price", "stock")
+        tree = ttk.Treeview(root, columns=columns, show="headings", height=15)
+        tree.pack(padx=20, pady=10, fill="both", expand=True)
 
-    for col in columns:
-        tree.heading(col, text=col.capitalize())
-        tree.column(col, width=100, anchor="center")
+        for col in columns:
+            tree.heading(col, text=col.capitalize())
+            tree.column(col, width=100, anchor="center")
 
-    # Fetch and insert data
-    cursor.execute("SELECT id, name, category, price, stock FROM inventory")
-    rows = cursor.fetchall()
+        refresh_tree(tree, cursor)
 
-    for row in rows:
-        tree.insert("", "end", values=row)
-    
         # --- Buttons ---
-    btn_frame = tk.Frame(root, bg="#f9f9f9")
-    btn_frame.pack(pady=10)
+        btn_frame = tk.Frame(root, bg="#f9f9f9")
+        btn_frame.pack(pady=10)
 
-    tk.Button(btn_frame, text="Add Product", bg="blue", fg="white",
-              command=lambda: add_product(cursor, tree)).pack(side="left", padx=10)
+        tk.Button(btn_frame, text="Add Product", bg="blue", fg="white",
+                  command=lambda: add_product(cursor, tree)).pack(side="left", padx=10)
 
-    tk.Button(btn_frame, text="Update Product", bg="orange", fg="white",
-              command=lambda: update_product(tree, cursor, db)).pack(side="left", padx=10)
+        tk.Button(btn_frame, text="Update Product", bg="orange", fg="white",
+                  command=lambda: update_product(tree, cursor, db)).pack(side="left", padx=10)
 
-    tk.Button(btn_frame, text="Delete Product", bg="red", fg="white",
-              command=lambda: delete_product(tree, cursor, db)).pack(side="left", padx=10)
+        tk.Button(btn_frame, text="Delete Product", bg="red", fg="white",
+                  command=lambda: delete_product(tree, cursor, db)).pack(side="left", padx=10)
 
-    root.mainloop()
+        tk.Button(btn_frame, text="View Customers", bg="purple", fg="white",
+                  command=show_customers).pack(side="left", padx=10)
+
+    def show_customers():
+        for widget in root.winfo_children():
+            widget.destroy()
+
+        root.title("Registered Customers")
+        root.geometry("900x500")
+        root.configure(bg="#f9f9f9")
+
+        tk.Label(root, text="Customer List", font=("Arial", 16, "bold"), bg="#f9f9f9").pack(pady=10)
+
+        columns = ("First Name", "Last Name", "Contact", "Email", "Address", "Username")
+        tree = ttk.Treeview(root, columns=columns, show="headings", height=15)
+        tree.pack(padx=20, pady=10, fill="both", expand=True)
+
+        for col in columns:
+            tree.heading(col, text=col)
+            tree.column(col, width=120, anchor="center")
+
+        cursor.execute("SELECT first_name, last_name, contact, email, address, username FROM users WHERE role = 'customer'")
+        for row in cursor.fetchall():
+            tree.insert("", "end", values=row)
+
+        tk.Button(root, text="Back to Inventory", command=show_inventory,
+                  bg="gray", fg="white").pack(pady=10)
+
+    # Initial view
+    show_inventory()
+
