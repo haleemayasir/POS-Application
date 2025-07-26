@@ -6,6 +6,7 @@ from inventory import get_products
 products = get_products()
 
 def start_pos_app(root, username):
+    from auth import show_login
     import cart
     cart.logged_in_user = username  # pass username to cart
 
@@ -71,7 +72,8 @@ def start_pos_app(root, username):
 
     tk.Button(qty_btn_frame, text="+", bg="#D1D5DB", fg="#111827", width=5, command=increase_quantity).pack(side="left", padx=5)
     tk.Button(qty_btn_frame, text="-", bg="#D1D5DB", fg="#111827", width=5, command=decrease_quantity).pack(side="left", padx=5)
-
+    tk.Button(root, text="Logout", bg="black", fg="white",
+              command=lambda: show_login(root)).pack(anchor="ne", padx=10, pady=10)
 
     cart_list.bind("<Double-Button-1>", lambda e: remove_selected())
 

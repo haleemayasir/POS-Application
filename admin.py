@@ -110,6 +110,7 @@ def open_admin_panel(root):
     cursor = db.cursor()
 
     def show_inventory():
+        from auth import show_login
         for widget in root.winfo_children():
             widget.destroy()
 
@@ -179,6 +180,9 @@ def open_admin_panel(root):
         
         tk.Button(btn_frame, text="View All Slips", bg="darkblue", fg="white",
           command=view_all_slips).pack(side="left", padx=10)
+        
+        tk.Button(btn_frame, text="Logout", bg="black", fg="white",
+              command=lambda: show_login(root)).pack(side="left", padx=10)
 
 
 
