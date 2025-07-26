@@ -5,11 +5,9 @@ import webbrowser
 import os
 
 def refresh_tree(tree, cursor):
-    # Clear existing rows
     for row in tree.get_children():
         tree.delete(row)
 
-    # Re-fetch and insert data
     cursor.execute("SELECT id, name, category, price, stock FROM inventory")
     for row in cursor.fetchall():
         tree.insert("", "end", values=row)
@@ -24,7 +22,6 @@ def add_product(cursor, tree):
         if not name or not category or not price or not stock:
             messagebox.showerror("Error", "All fields are required.")
             return
-
         try:
             cursor.execute("INSERT INTO inventory (name, category, price, stock) VALUES (%s, %s, %s, %s)",
                            (name, category, float(price), int(stock)))
@@ -41,22 +38,15 @@ def add_product(cursor, tree):
     popup.configure(bg="#f0f0f0")
 
     tk.Label(popup, text="Name:", bg="#f0f0f0").pack(pady=5)
-    name_entry = tk.Entry(popup, width=30)
-    name_entry.pack()
-
+    name_entry = tk.Entry(popup, width=30).pack()
     tk.Label(popup, text="Category:", bg="#f0f0f0").pack(pady=5)
-    category_entry = tk.Entry(popup, width=30)
-    category_entry.pack()
-
+    category_entry = tk.Entry(popup, width=30).pack()
     tk.Label(popup, text="Price:", bg="#f0f0f0").pack(pady=5)
-    price_entry = tk.Entry(popup, width=30)
-    price_entry.pack()
-
+    price_entry = tk.Entry(popup, width=30).pack()
     tk.Label(popup, text="stock:", bg="#f0f0f0").pack(pady=5)
-    stock_entry = tk.Entry(popup, width=30)
-    stock_entry.pack()
+    stock_entry = tk.Entry(popup, width=30).pack()
 
-    tk.Button(popup, text="Save", command=save, bg="green", fg="white").pack(pady=10)
+    tk.Button(popup, text="Save", command=save, bg="#236A3A", fg="white").pack(pady=10)
 
 def update_product(tree, cursor, db):
     selected = tree.focus()
@@ -85,22 +75,20 @@ def update_product(tree, cursor, db):
         new_qty = qty_entry.get()
 
         if new_price and new_qty:
-            cursor.execute("UPDATE inventory SET price = %s, stock = %s WHERE id = %s",
-                           (new_price, new_qty, prod_id))
+            cursor.execute("UPDATE inventory SET price = %s, stock = %s WHERE id = %s",(new_price, new_qty, prod_id))
             db.commit()
             refresh_tree(tree, cursor)
             update_win.destroy()
 
-    tk.Button(update_win, text="Update", command=save_update, bg="green", fg="white").pack(pady=10)
+    tk.Button(update_win, text="Update", command=save_update, bg="#236A3A", fg="white").pack(pady=10)
 
 def delete_product(tree, cursor, db):
     selected = tree.focus()
     if not selected:
         return
-
+    
     values = tree.item(selected, "values")
     prod_id = values[0]
-
     cursor.execute("DELETE FROM inventory WHERE id = %s", (prod_id,))
     db.commit()
     refresh_tree(tree, cursor)
@@ -163,25 +151,25 @@ def open_admin_panel(root):
         btn_frame = tk.Frame(root, bg="#f9f9f9")
         btn_frame.pack(pady=10)
 
-        tk.Button(btn_frame, text="Add Product", bg="blue", fg="white",
+        tk.Button(btn_frame, text="Add Product", bg="lightgray", fg="black",
                   command=lambda: add_product(cursor, tree)).pack(side="left", padx=10)
 
-        tk.Button(btn_frame, text="Update Product", bg="orange", fg="white",
+        tk.Button(btn_frame, text="Update Product", bg="lightgray", fg="black",
                   command=lambda: update_product(tree, cursor, db)).pack(side="left", padx=10)
 
-        tk.Button(btn_frame, text="Delete Product", bg="red", fg="white",
+        tk.Button(btn_frame, text="Delete Product", bg="lightgray", fg="black",
                   command=lambda: delete_product(tree, cursor, db)).pack(side="left", padx=10)
 
-        tk.Button(btn_frame, text="View Customers", bg="purple", fg="white",
+        tk.Button(btn_frame, text="View Customers", bg="lightgray", fg="black",
                   command=show_customers).pack(side="left", padx=10)
         
-        tk.Button(btn_frame, text="View Sales History", bg="teal", fg="white",
+        tk.Button(btn_frame, text="View Sales History", bg="lightgray", fg="black",
           command=show_sales).pack(side="left", padx=10)
         
-        tk.Button(btn_frame, text="View All Slips", bg="darkblue", fg="white",
+        tk.Button(btn_frame, text="View All Slips", bg="lightgray", fg="black",
           command=view_all_slips).pack(side="left", padx=10)
         
-        tk.Button(btn_frame, text="Logout", bg="black", fg="white",
+        tk.Button(btn_frame, text="Logout", bg="lightgray", fg="black",
               command=lambda: show_login(root)).pack(side="left", padx=10)
 
 
