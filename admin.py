@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from db import db_connect
+import webbrowser
+import os
 
 def refresh_tree(tree, cursor):
     # Clear existing rows
@@ -174,6 +176,10 @@ def open_admin_panel(root):
         
         tk.Button(btn_frame, text="View Sales History", bg="teal", fg="white",
           command=show_sales).pack(side="left", padx=10)
+        
+        tk.Button(btn_frame, text="View All Slips", bg="darkblue", fg="white",
+          command=view_all_slips).pack(side="left", padx=10)
+
 
 
     def show_customers():
@@ -224,6 +230,42 @@ def open_admin_panel(root):
             tree.insert("", "end", values=row)
 
         tk.Button(root, text="Back to Inventory", command=show_inventory,bg="gray", fg="white").pack(pady=10)
+
+    def view_all_slips():
+        for widget in root.winfo_children():
+            widget.destroy()
+
+        slips_folder = "slips"
+
+        tk.Label(root, text="Saved Receipts", font=("Arial", 16, "bold"), bg="#f9f9f9").pack(pady=10)
+
+        if not os.path.exists(slips_folder):
+            tk.Label(root, text="No slips folder found.", font=("Arial", 12), bg="#f9f9f9").pack()
+            return
+
+        slips = [f for f in os.listdir(slips_folder) if f.endswith(".pdf")]
+        if not slips:
+            tk.Label(root, text="No receipts found in slips folder.", font=("Arial", 12), bg="#f9f9f9").pack()
+            return
+
+        listbox = tk.Listbox(root, font=("Courier", 10), width=70, height=20)
+        listbox.pack(padx=20, pady=10, fill="both", expand=True)
+
+        for slip in sorted(slips, reverse=True):
+            listbox.insert("end", slip)
+
+        def open_selected():
+            selected = listbox.curselection()
+            if selected:
+                filename = listbox.get(selected[0])
+                filepath = os.path.join(slips_folder, filename)
+                webbrowser.open_new(rf"{filepath}")
+
+        tk.Button(root, text="Open Selected", command=open_selected,
+              bg="green", fg="white").pack(pady=5)
+
+        tk.Button(root, text="Back to Inventory", command=show_inventory,
+              bg="gray", fg="white").pack(pady=5)
 
     # Initial view
     show_inventory()

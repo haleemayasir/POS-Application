@@ -1,5 +1,7 @@
 from tkinter import messagebox
 from db import db_connect
+from fpdf import FPDF
+from datetime import datetime
 
 db = db_connect()
 cursor = db.cursor()
@@ -92,7 +94,11 @@ def charge():
     db.commit()
 
     # Step 5: Create receipt
-    slip = "       ✦ RECEIPT ✦\n"
+    now = datetime.now()
+    formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
+
+    slip = f"       * RECEIPT *\nDate: {formatted_time}\n"
+
     slip += "-" * 26 + "\n"
     for name, qty in cart_items:
         item = cart[name]["product"]
@@ -108,9 +114,33 @@ def charge():
 
     # Step 6: Show receipt and clear cart
     messagebox.showinfo("Order Placed", slip)
+    export_receipt_to_pdf(slip)  # ✅ Save receipt as PDF
     cart.clear()
     discount_var.set(False)
     update_cart()
+
+def export_receipt_to_pdf(receipt_text):
+    from fpdf import FPDF
+    import os
+    from datetime import datetime
+
+    folder = "slips"  # your manually created folder
+    os.makedirs(folder, exist_ok=True)  # will not overwrite, just ensures folder exists
+
+    # Create PDF
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Courier", size=12)
+
+    for line in receipt_text.splitlines():
+        pdf.cell(200, 10, txt=line, ln=True)
+
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = os.path.join(folder, f"receipt_{timestamp}.pdf")
+
+    pdf.output(filename)
+    messagebox.showinfo("Receipt Saved", f"Receipt saved as:\n{filename}")
+
 
 def remove_selected():
     selected = cart_list.curselection()
