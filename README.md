@@ -78,8 +78,6 @@ Cashiers can:
 | Database              | MySQL                           |
 | Database Connectivity | MySQL Connector                 |
 | Image Processing      | Pillow (PIL)                    |
-| Data Visualization    | Matplotlib                      |
-| Data Handling         | Pandas                          |
 | Development Tools     | Visual Studio Code, Git, GitHub |
 
 
