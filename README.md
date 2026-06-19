@@ -8,8 +8,6 @@ This application is designed to streamline daily retail operations in a perfume 
 
 The system uses **MySQL** as its backend database to store and manage products, customers, and transaction records efficiently.
 
----
-
 ## Features
 
 ### 🔐 User Authentication
@@ -48,8 +46,6 @@ The system uses **MySQL** as its backend database to store and manage products, 
 * Store purchase history
 * Generate receipts for completed orders
 
----
-
 ## 👤 User Roles
 
 ### Admin
@@ -73,8 +69,6 @@ Cashiers can:
 * Process customer payments
 * Generate receipts
 
----
-
 ## 🛠️ Technologies Used
 
 | Category              | Technologies                    |
@@ -88,25 +82,6 @@ Cashiers can:
 | Data Handling         | Pandas                          |
 | Development Tools     | Visual Studio Code, Git, GitHub |
 
----
-
-## 📂 Project Structure
-
-```text
-Perfume-POS-System/
-│
-├── login.py              # User authentication
-├── pos.py                # Point-of-Sale interface
-├── admin.py              # Admin dashboard
-├── inventory.py          # Product management
-├── customer.py           # Customer management
-├── db.py                 # Database connection and queries
-├── receipts/             # Generated receipts
-├── images/               # Product and UI assets
-└── README.md
-```
-
----
 
 ## 🗄️ Database
 
@@ -117,8 +92,6 @@ The application uses a MySQL database to manage:
 * Customer details
 * Sales transactions
 * Receipt data
-
----
 
 ## 🚀 Installation
 
@@ -146,8 +119,6 @@ pip install mysql-connector-python pillow pandas matplotlib
 python login.py
 ```
 
----
-
 ## 📸 Screenshots
 
 Add screenshots of:
@@ -159,6 +130,5 @@ Add screenshots of:
 * Checkout Process
 * Generated Receipt
 
----
 
 
