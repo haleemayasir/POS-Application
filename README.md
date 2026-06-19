@@ -117,16 +117,3 @@ pip install mysql-connector-python pillow pandas matplotlib
 python login.py
 ```
 
-## 📸 Screenshots
-
-Add screenshots of:
-
-* Login Screen
-* Admin Dashboard
-* Product Display Interface
-* Shopping Cart
-* Checkout Process
-* Generated Receipt
-
-
-
